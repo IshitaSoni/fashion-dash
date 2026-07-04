@@ -1,0 +1,44 @@
+[
+    {
+        "item_id": 1,
+        "title": "Oversized Black Graphic Hoodie",
+        "source": "Myntra",
+        "status": "bought"
+    },
+    {
+        "item_id": 2,
+        "title": "Beige Double-Breasted Formal Blazer",
+        "source": "Amazon",
+        "status": "wishlist"
+    },
+    {
+        "item_id": 3,
+        "title": "Floral Print Summer Maxi Dress",
+        "source": "Flipkart",
+        "status": "cart"
+    },
+    {
+        "item_id": 4,
+        "title": "Baggy Denim Cargo Pants",
+        "source": "Myntra",
+        "status": "bought"
+    },
+    {
+        "item_id": 5,
+        "title": "Black Leather Combat Boots",
+        "source": "Flipkart",
+        "status": "cart"
+    },
+    {
+        "item_id": 6,
+        "title": "Loose Fit Skate Sneakers",
+        "source": "Myntra",
+        "status": "bought"
+    },
+    {
+        "item_id": 7,
+        "title": "Pinstripe Office Trousers Slim Fit",
+        "source": "Amazon",
+        "status": "wishlist"
+    }
+]

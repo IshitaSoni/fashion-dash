@@ -1,0 +1,50 @@
+[
+    {
+        "product_id": 101,
+        "title": "Oversized Vintage Sweatshirt",
+        "brand": "Urban Wear",
+        "price": 1999
+    },
+    {
+        "product_id": 102,
+        "title": "Classic Linen White Button-Down Shirt",
+        "brand": "Office Chic",
+        "price": 1499
+    },
+    {
+        "product_id": 103,
+        "title": "Bohemian Pastel Ruffle Sundress",
+        "brand": "Wildflower",
+        "price": 2499
+    },
+    {
+        "product_id": 104,
+        "title": "Faux Leather Studded Moto Jacket",
+        "brand": "Rebel Style",
+        "price": 3999
+    },
+    {
+        "product_id": 105,
+        "title": "Relaxed Fit Cargo Joggers",
+        "brand": "Street Vibe",
+        "price": 1799
+    },
+    {
+        "product_id": 106,
+        "title": "Formal Pleated Khaki Trousers",
+        "brand": "Corporate Edge",
+        "price": 2199
+    },
+    {
+        "product_id": 107,
+        "title": "Ditsy Floral Wrap Midi Dress",
+        "brand": "Cottage Core",
+        "price": 1899
+    },
+    {
+        "product_id": 108,
+        "title": "Chunky Platform Ankle Boots",
+        "brand": "Grunge Lab",
+        "price": 3200
+    }
+]
