@@ -1,0 +1,41 @@
+Hey, I have a fashion-tech project in mind. I will call it "Fashion dash" (dashboard).
+So, people struggle with finding their personal style. 
+
+What if there was a snapchat like bitmoji, where users could try stuff which they actually want to wear. 
+So, this application/ algorithm will:
+- take data from various websites and apps like myntra, amazon, flipkart, etc, and look at the items users wishlist, have in cart, or have previously bought. 
+- -analyse that data to find out what style of items the user likes. 
+- - it needs to create different categories of styles. Like casual chic, office chic, barbie, etc. (But a nice useful broad range. I will define this more later.)
+- Then it will categorize those items from all their items based on their vibe, **to understand user taste**.
+- It will create a dashboard for this.
+- a prediction model to suggest user stuff to buy based on their style. 
+
+Further additions:
+
+- Create a fun user avatar using this data. and help users try on clothes on that. 
+
+But, first of all, I just want to create a simple python project to learn. 
+
+So just the 3 steps:
+
+1. accumulating user data
+2. categorizing user fashion style from that data
+3. Suggesting user products based on that data and their style. 
+
+Goal is to create a simple solid Python project to understand data pipelines etc which I could also use in a college project later. 
+
+Code Structure:
+
+fashion_dash/
+│
+├── data/
+│   ├── user_history.json       # Simulated cart/wishlist data
+│   └── product_catalog.json    # Mock items available for recommendation
+│
+├── src/
+│   ├── __init__.py
+│   ├── data_pipeline.py        # Step 1: Loads and cleans the data
+│   ├── style_analyzer.py       # Step 2: Categorizes the user's vibe
+│   └── recommender.py          # Step 3: Suggests new products
+│
+└── main.py                     # The orchestrator that runs the whole flow
