@@ -1,6 +1,7 @@
 import json
 import pandas as pd
 
+# 1. Configuration Constants
 STYLE_TAXONOMY = {
     "Streetwear": ["oversized", "hoodie", "cargo", "pants", "sneakers", "sweatshirt", "joggers", "skate", "baggy"],
     "Corporate Chic": ["blazer", "formal", "trousers", "shirt", "pinstripe", "office", "button-down", "pleated", "khaki"],
@@ -8,62 +9,78 @@ STYLE_TAXONOMY = {
     "Edgy / Grunge": ["leather", "combat", "boots", "jacket", "moto", "studded", "faux", "platform", "chunky", "black"]
 }
 
-# 2. Define Action Weights (Intent-based Scoring)
 ACTION_WEIGHTS = {
     "bought": 3,
     "cart": 2,
     "wishlist": 1
 }
 
+# ==========================================================
+# 🧪 PURE LOGIC FUNCTION (100% Testable, No File I/O)
+# ==========================================================
+def calculate_style_scores(items_list, taxonomy, weights):
+    """
+    Pure Function: Takes a raw list of dictionaries, matches keywords,
+    applies weights, and returns the raw point distribution.
+    """
+    style_scores = {style: 0 for style in taxonomy.keys()}
+    
+    for item in items_list:
+        title = item.get('title', '').lower()
+        status = item.get('status', 'wishlist')
+        weight = weights.get(status, 1)
+        
+        for style, keywords in taxonomy.items():
+            for keyword in keywords:
+                if keyword in title:
+                    style_scores[style] += weight
+                    
+    return style_scores
+
+
+# ==========================================================
+# 📥 DATA INGESTION & FORMATTING WRAPPER
+# ==========================================================
 def load_user_data(filepath):
-    """Loads user history and converts it into a clean Pandas DataFrame."""
+    """Loads user history from disk into a Pandas DataFrame."""
     with open(filepath, 'r') as f:
-        data = json.load(f)     
+        data = json.load(f)
     return pd.DataFrame(data)
 
 def analyze_user_style(df):
-    """Analyzes item titles against keywords to calculate a weighted style profile."""
-    # Initialize a dictionary to hold scores for each style archetype
-    style_scores = {style: 0 for style in STYLE_TAXONOMY.keys()}
-
-    # Process every item in the user's history
-    for _, row in df.iterrows():
-        title = row['title'].lower()
-        status = row['status']
-        weight = ACTION_WEIGHTS.get(status, 1) # Default weight to 1 if status is unknown
+    """
+    Acts as the interface for the rest of the application.
+    Converts DataFrame to records, runs pure logic, and profiles percentages.
+    """
+    # Convert DataFrame back to a list of dicts to feed the pure function
+    items_list = df.to_dict(orient='records')
+    
+    # Call our pure function
+    style_scores = calculate_style_scores(items_list, STYLE_TAXONOMY, ACTION_WEIGHTS)
         
-        # Check title against keywords for each archetype
-        for style, keywords in STYLE_TAXONOMY.items():
-            for keyword in keywords:
-                if keyword in title:
-                    # Score = Number of keyword matches * behavioral weight of the action
-                    style_scores[style] += weight
-
-    # Calculate percentages for a cleaner output
     total_score = sum(style_scores.values())
     if total_score == 0:
-        return style_scores, "Undecided"
-    
+        return {style: 0.0 for style in STYLE_TAXONOMY.keys()}, "Undecided"
+        
     style_percentages = {style: round((score / total_score) * 100, 2) for style, score in style_scores.items()}
-
-    # Determine dominant style
     dominant_style = max(style_scores, key=style_scores.get)
-
+    
     return style_percentages, dominant_style
 
+
+# ==========================================================
+# 🖥️ LOCAL TESTING BLOCK
+# ==========================================================
 if __name__ == "__main__":
-    # Test the script locally
     user_history_path = "data/user_history.json"
     
-    print("🔄 Loading user data stream...")
+    print("🔄 Loading data via wrapper...")
     df_user = load_user_data(user_history_path)
     
-    print("🧠 Analyzing text patterns and intent weights...")
+    print("🧠 Processing style profiles...")
     style_profile, dominant = analyze_user_style(df_user)
     
-    print("\n📊 --- FASHION DASH STYLE REPORT ---")
-    print(f"Dominant Aesthetic: ✨ {dominant} ✨\n")
-    print("Full Breakdown:")
+    print("\n📊 --- TERMINAL VISUAL CHECK ---")
+    print(f"Dominant Vibe: {dominant}")
     for style, percentage in style_profile.items():
         print(f" - {style}: {percentage}%")
-    print("------------------------------------\n")
