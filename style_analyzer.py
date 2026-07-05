@@ -18,7 +18,7 @@ ACTION_WEIGHTS = {
 def load_user_data(filepath):
     """Loads user history and converts it into a clean Pandas DataFrame."""
     with open(filepath, 'r') as f:
-        data = json.load(f)
+        data = json.load(f)     
     return pd.DataFrame(data)
 
 def analyze_user_style(df):
