@@ -1,5 +1,6 @@
 import json
 import pandas as pd
+import re
 from style_analyzer import load_user_data, analyze_user_style, STYLE_TAXONOMY
 
 def load_catalog_data(filepath):
@@ -19,13 +20,19 @@ def recommend_products(catalog_df, style_profile, top_n=3):
         title = row['title'].lower()
         product_score = 0
         
+        matched_styles = set()
+        
         # Calculate how well this item matches the user's style layout
         for style, percentage in style_profile.items():
             keywords = STYLE_TAXONOMY[style]
             # If a keyword matches, add points weighted by how much the user likes that style
             for keyword in keywords:
-                if keyword in title:
-                    product_score += percentage
+                if re.search(r'\b' + re.escape(keyword) + r'\b', title):
+                    matched_styles.add(style)
+                    break
+        
+        for style in matched_styles:
+            product_score += style_profile[style]
         
         # Add the computed score to our item metadata
         item_data = row.to_dict()

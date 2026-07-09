@@ -1,5 +1,6 @@
 import json
 import pandas as pd
+import re
 
 # 1. Configuration Constants
 STYLE_TAXONOMY = {
@@ -30,10 +31,16 @@ def calculate_style_scores(items_list, taxonomy, weights):
         status = item.get('status', 'wishlist')
         weight = weights.get(status, 1)
         
+        matched_styles = set()
+        
         for style, keywords in taxonomy.items():
             for keyword in keywords:
-                if keyword in title:
-                    style_scores[style] += weight
+                if re.search(r'\b' + re.escape(keyword) + r'\b', title):
+                    matched_styles.add(style)
+                    break
+        
+        for style in matched_styles:
+            style_scores[style] += weight
                     
     return style_scores
 
