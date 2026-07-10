@@ -1,33 +1,49 @@
+📋 SWE-Agent Problem Statement: Multi-Criteria Dynamic Re-Ranking Engine
+
 🔍 System Context & Architecture:
 
-Our application, Fashion Dash, tracks user fashion archetypes and serves product recommendations. 
-The codebase consists of three primary modules: 
-- style_analyzer.py – Segments users into fashion dimensions based on e-commerce text descriptions.
-- recommender.py – Scores items in a master catalog against the user's computed preferences.
-- main.py – The orchestrator that chains these modules into a single execution pipeline.
-
-🚨 Current Engineering Vulnerabilities (The Failures)
-
-Our current keyword matching logic across style_analyzer.py and recommender.py relies on naive, case-insensitive substring containment checks (if keyword in title:). 
-This creates two critical bugs in our system: 
-- Substring Collisions (False Positives): The system triggers false matches on non-relevant items due to embedded word fragments. For example, a user who buys an item with the word "Occupants" or "Participle" accidentally triggers points for the keyword "pants" or "capri", skewing their style matrix completely.
-- Compound-Modifier Over-Counting: If an item title in our catalog contains a keyword multiple times or bundles it closely with punctuation (e.g., "Oversized, baggy-style streetwear hoodie!"), the loop behavior causes multiple additive hits on a single item, pushing recommendation match scores past $100\%$ or skewing standard catalog filtration distributions.
+    Our application, Fashion Dash, currently recommends products based strictly on a text-based matching score (match_score). The system surfaces items from product_catalog.json purely by highest style alignment, ignoring external retail constraints like pricing tier and user interaction statuses.
+    
+🚨 Current Business Vulnerabilities (The Problem):
+    
+    While our recommendation engine is mathematically sound regarding style extraction, it performs poorly in production because it ignores user purchasing power and behavioral states:
+        1. Price Affinity Mismatch: A user who historically buys budget items (e.g., ₹1,000) is being recommended ₹4,000 luxury jackets simply because the text keywords match perfectly.
+        2. Inventory Fatigue: The engine treats items that a user has already purchased, carted, or wishlisted exactly the same as brand-new items in the catalog, leading to a redundant and repetitive user dashboard feed.
 
 🎯 Core Engineering Requirements
 
-Your task is to refactor the internal search and scoring mechanisms across both style_analyzer.py and recommender.py to achieve tokenized precision while maintaining total backward compatibility.
+    You are required to upgrade the recommendation system in recommender.py from a single-criterion text matcher to a Multi-Criteria Scoring Engine.
 
-1. Implement True Word-Boundary Tokenization:
-    - Modify the keyword extraction mechanism to enforce strict word boundaries. A keyword must only match if it exists as an independent, whole word or token within the title string.
-    - Matching must be entirely case-insensitive and cleanly handle standard surrounding punctuation marks (such as commas, hyphens, exclamation points, and slashes) without considering them a part of the token.
-    - Pass Criteria: "Baggy Denim Pants" and "Cargo Pants, Black" must trigger a match for the keyword "pants". "Occupants Denim Jacket" must NOT trigger a match for "pants".
+    To do this cleanly, you are explicitly authorized to refactor any function signatures across style_analyzer.py, recommender.py, and main.py, provided the entire pipeline executes flawlessly via python main.py when you are finished.
 
-2. Idempotent Style Scoring (Deduplication):
-    - In both the style classification mapping loop and the recommendation scoring loop, a unique fashion archetype category (e.g., Streetwear, Corporate Chic) should only be credited once per input item, regardless of how many times distinct keywords from that same category appear in the title text.
-    - Example: If an item title is "Oversized baggy graphic hoodie", and your taxonomy maps oversized, baggy, and hoodie to Streetwear, the user profile or product score should receive the weight coefficient for Streetwear exactly once for this item, not three times.
+    1. Compute the User's Price Tier
+            
+        Before scoring catalog items, calculate the user's historical price baseline. Because data/user_history.json does not contain explicit price metrics and titles do not match the master catalog exactly, you must compute proxy prices using Category-Level Aggregation:
+
+        1. Map Catalog Items to Style Categories: Using the STYLE_TAXONOMY dictionary from style_analyzer.py, look at the title of each product in product_catalog.json. Classify each catalog product into its matching fashion category based on word-boundary keyword presence.
+
+        2. Compute Category Median Prices: For each of the four style categories (Streetwear, Corporate Chic, Cottagecore / Boho, Edgy / Grunge), calculate the median price of all catalog products mapped to that specific category.
+
+        3. Map User History to Category Medians:
+        Classify each interaction in data/user_history.json into its corresponding style category using the same taxonomy logic. Assign that item a proxy price equal to its category's median catalog price.
+
+        4. Establish Target Price Point:
+        Calculate the median of all these assigned proxy historical prices. This final value is the user's Target Price Point.
     
-3. Strict Signature and Pipeline Preservation:
-    - Do not modify the input or output parameters of the exposed interface functions. Modifying these signatures will break main.py and downstream data consumers. 
-        -- style_analyzer.analyze_user_style(df) must still accept a pandas.DataFrame and return a tuple: (dict, string).
-        -- recommender.recommend_products(catalog_df, style_profile, top_n) must still return a sorted pandas.DataFrame.
-    - Do not introduce any heavy third-party search indexing frameworks (like Elasticsearch, NLTK, or SpaCy) to requirements.txt. Rely exclusively on Python standard libraries (e.g., the re module) or built-in pandas/numpy capabilities.Run the problem-checker skill
+    2. Apply Multi-Criteria Tier Penalty Formulas
+    
+        For every product in the master catalog, calculate a final adjusted score called final_rank_score using three distinct criteria loops:
+        
+        - Criterion A (Base Style Score): Start with the original text-based match_score (the points accumulated from keyword matches).
+        
+        - Criterion B (Price Distance Penalty): Calculate how far the catalog item's price is from the user's Target Price Point. For every full ₹500 variance (above or below the target), penalize the item by subtracting 10 points from its score.Formula: $Penalty = \lfloor \frac{|Catalog\ Price\ -\ Target\ Price|}{500} \rfloor \times 10$
+    
+    Criterion C (Prior Interaction Suppression): Check if the catalog product already exists in the user's historical interaction stream.
+    
+        - If the user has already bought the item, reduce its score to 0 (suppress it entirely).
+        
+        - If the item is currently in the user's cart or wishlist, penalize its score by subtracting 50 points (demote it, but keep it discoverable).
+    
+    3. Output Format and Sorting Alignment
+    
+        The updated recommend_products function must return a Pandas DataFrame sorted in descending order by final_rank_score. Items with a score of 0 or less must be dropped from the final output. The resulting DataFrame must contain the new final_rank_score column.

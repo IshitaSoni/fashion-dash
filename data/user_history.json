@@ -1,44 +1,9 @@
 [
-    {
-        "item_id": 1,
-        "title": "Oversized Black Graphic Hoodie",
-        "source": "Myntra",
-        "status": "bought"
-    },
-    {
-        "item_id": 2,
-        "title": "Beige Double-Breasted Formal Blazer",
-        "source": "Amazon",
-        "status": "wishlist"
-    },
-    {
-        "item_id": 3,
-        "title": "Floral Print Summer Maxi Dress",
-        "source": "Flipkart",
-        "status": "cart"
-    },
-    {
-        "item_id": 4,
-        "title": "Baggy Denim Cargo Pants",
-        "source": "Myntra",
-        "status": "bought"
-    },
-    {
-        "item_id": 5,
-        "title": "Black Leather Combat Boots",
-        "source": "Flipkart",
-        "status": "cart"
-    },
-    {
-        "item_id": 6,
-        "title": "Loose Fit Skate Sneakers",
-        "source": "Myntra",
-        "status": "bought"
-    },
-    {
-        "item_id": 7,
-        "title": "Pinstripe Office Trousers Slim Fit",
-        "source": "Amazon",
-        "status": "wishlist"
-    }
+  {"item_id": 101, "title": "Oversized Vintage Sweatshirt", "status": "bought"},
+  {"item_id": 102, "title": "Relaxed Fit Cargo Joggers", "status": "bought"},
+  {"item_id": 103, "title": "Classic Linen White Button-Down Shirt", "status": "wishlist"},
+  {"item_id": 104, "title": "Pinstripe Formal Tailored Blazer", "status": "cart"},
+  {"item_id": 105, "title": "Bohemian Pastel Ruffle Sundress", "status": "wishlist"},
+  {"item_id": 106, "title": "Faux Leather Studded Moto Jacket", "status": "bought"},
+  {"item_id": 107, "title": "Chunky Black Combat Boots", "status": "cart"}
 ]
